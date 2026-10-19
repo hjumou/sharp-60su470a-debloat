@@ -4,9 +4,15 @@
 # apply_debloat_v2.sh 会先读本文件，命中即拒绝执行，不靠人记。
 #
 # 血的教训（2026-10-19）：
-#   Antigravity 的 batch 2 把 mstar.factorymenu.ui 当"臃肿"删了，
-#   而它是这台电视【唯一的 ADB 开关入口】→ 删完就再也打不开 ADB，
-#   只能恢复出厂。本文件的全部意义就是让机器来拦这件事。
+#   ① Antigravity 的 batch 2 把 mstar.factorymenu.ui 当"臃肿"删了，
+#      而它是这台电视【唯一的 ADB 开关入口】→ 删完就再也打不开 ADB。
+#   ② 我们把 com.sharp.fxc.shortcut 当"快捷方式"删了，结果【设置直接崩溃】
+#      （MainBasePage.getHomePageInfo → Cursor 为 null 的 NPE）。
+#      它是设置首页的 ContentProvider 数据源，属于隐性硬依赖。
+#   ③ 系统应用的 APK 可能是【无 dex】的（代码在 /system/app/X/oat/arm64/X.odex），
+#      这种包用 U 盘装到 /data 必然 classNotFound，装回去也打不开（本次踩过）。
+#      正确恢复法是 `pm uninstall <pkg>` 让它退回 /system 原厂版，不是 pm install。
+# 本文件的全部意义：让机器来拦上面这些事，不靠人记。
 # ---------------------------------------------------------------------------
 
 # === 1. 桌面 / Home（本机两个候选都在 /data，删了可能没桌面）===
@@ -29,6 +35,8 @@
 # === 4. 系统框架 / 设置 / 界面 ===
 ^android$
 ^com\.fxc\.settings$
+# ★ 设置首页的 ContentProvider 数据源（删了「设置」必崩，2026-10-19 实测）
+^com\.sharp\.fxc\.shortcut$
 ^com\.android\.settings
 ^com\.android\.systemui$
 ^com\.android\.webview$

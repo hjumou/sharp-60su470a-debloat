@@ -11,3 +11,7 @@ __pycache__/
 
 # runtime logs (apply_v2 / verify / baseline)
 apply_v2_*.log
+# full/hotgrab backup payloads (keep manifests, skip APK blobs)
+backup/full_*/apk/
+backup/hotgrab_*/
+usb-tools/
