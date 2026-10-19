@@ -1,11 +1,36 @@
 # Sharp 60SU470A (LCD_xxSUFOC470A) / Android 6.0 (API 23) debloat list
-# Method: pm disable-user --user 0 (reversible, no root, no uninstall)
-#   Apply : sh apply_debloat.sh
-#   Restore: sh restore_debloat.sh   (re-enables every package below)
+# ===========================================================================
+# BATCH 1 ONLY. 24 packages.
 #
-# NEVER disable (safety): com.oversea.aslauncher (home), com.sharp.home.resource,
-#   com.sharp.launcher3 (fallback home), com.mstar.* (TV core), com.fxc.settings,
-#   com.android.systemui, com.android.webview, providers, bluetooth, autopair, BLE.
+# Method (verified on this ROM):
+#   remove : pm uninstall -k --user 0 <pkg>      <- APK+data stay on device
+#   restore: pm install -r --user 0 <apk>        <- plain `adb install` FAKES success
+#
+#   Apply   : sh apply_debloat_v2.sh            (dry-run by default)
+#             sh apply_debloat_v2.sh --apply    (execute)
+#   Verify  : sh verify_tv.sh 59
+#   Restore : sh restore_debloat.sh
+#
+# This ROM DENIES pm disable-user AND pm hide from adb shell
+#   (SecurityException: CHANGE_COMPONENT_ENABLED_STATE / MANAGE_USERS).
+#   Do not waste time re-testing those two.
+#
+# ===========================================================================
+# !!! BATCH 2 IS PERMANENTLY FORBIDDEN !!!
+# A second batch of 10 packages (done by Antigravity on 2026-10-19) removed
+# mstar.factorymenu.ui = THE ONLY ADB ENTRY POINT on this TV, plus
+# com.fxc.factory.view / com.ctv.factorytest / com.ctv.newfactorytest
+# and both file managers (ES, XiaoBai). Result: no factory menu -> no ADB
+# -> unrecoverable without a factory reset.
+# Those packages are now hard-blocked in safety_whitelist.txt.
+# ===========================================================================
+#
+# NEVER remove (safety, also enforced by safety_whitelist.txt):
+#   com.oversea.aslauncher (home) / com.sharp.launcher3 (fallback home) /
+#   com.sharp.home.resource / mstar.factorymenu.ui / factory entries /
+#   com.mstar.* (TV core) / com.fxc.settings / com.android.systemui /
+#   com.android.webview / providers / bluetooth / autopair / BLE /
+#   com.cultraview.newfilemanager (media browser = only USB install path).
 
 # --- Tier A: ads / telemetry / promo / demo (safe) ---
 com.fxc.bootad.bootadplayer          # 开机广告播放器

@@ -1,0 +1,78 @@
+# safety_whitelist.txt
+# ---------------------------------------------------------------------------
+# 永不删除白名单（grep -E 正则，一行一条，匹配 = 拒绝卸载）
+# apply_debloat_v2.sh 会先读本文件，命中即拒绝执行，不靠人记。
+#
+# 血的教训（2026-10-19）：
+#   Antigravity 的 batch 2 把 mstar.factorymenu.ui 当"臃肿"删了，
+#   而它是这台电视【唯一的 ADB 开关入口】→ 删完就再也打不开 ADB，
+#   只能恢复出厂。本文件的全部意义就是让机器来拦这件事。
+# ---------------------------------------------------------------------------
+
+# === 1. 桌面 / Home（本机两个候选都在 /data，删了可能没桌面）===
+^com\.oversea\.aslauncher$
+^com\.sharp\.launcher3$
+^com\.sharp\.home\.resource$
+
+# === 2. 工厂菜单与工厂入口（ADB 唯一入口，最高优先级保护）===
+^mstar\.factorymenu\.ui$
+^mstar\.tvsetting\.factory
+^com\.fxc\.factory\.view$
+^com\.ctv\.factorytest$
+^com\.ctv\.newfactorytest$
+
+# === 3. MStar TV 核心（电视功能本体）===
+^com\.mstar\.
+^com\.cultraview\.
+^com\.ctv\.autopair$
+
+# === 4. 系统框架 / 设置 / 界面 ===
+^android$
+^com\.fxc\.settings$
+^com\.android\.settings
+^com\.android\.systemui$
+^com\.android\.webview$
+^com\.android\.providers\.
+^com\.android\.packageinstaller$
+^com\.android\.defcontainer$
+^com\.android\.documentsui$
+^com\.android\.documentsui\.files$
+^com\.android\.shell$
+^com\.android\.externalstorage$
+^com\.android\.sharedstoragebackup$
+^com\.android\.inputdevices$
+^com\.android\.inputmethod
+^com\.android\.keychain$
+^com\.android\.certinstaller$
+^com\.android\.pacprocessor$
+^com\.android\.proxyhandler$
+^com\.android\.vpndialogs$
+^com\.android\.statementservice$
+^com\.android\.captiveportallogin$
+^com\.android\.location\.fused$
+^com\.android\.provision$
+^com\.android\.wizard$
+^com\.android\.backupconfirm$
+^com\.android\.sharedstoragebackup$
+
+# === 5. 蓝牙 / 遥控 / 配对（删了遥控器可能失灵）===
+^com\.android\.bluetooth$
+^com\.android\.bluetoothmidiservice$
+^com\.android\.bcm\.bluetooth$
+^com\.mstar\.bluetooth3dservice$
+^com\.kehdev\.kehdevmanger$
+
+# === 6. 文件管理器 / 媒体库（无 ADB 时唯一的 U 盘安装入口）===
+^com\.cultraview\.newfilemanager$
+^com\.android\.documentsui$
+
+# === 6b. 救命工具类文件管理器（可选，默认保护）===
+# 理由：ADB 打不开时，这是唯一能装 APK 的通道（本次事故就是这么走出来的）。
+# 它们本身是臃肿的三方应用，你若确认不需要，把下面两行注释掉再删即可。
+# 注意：com.cultraview.newfilemanager（/system 媒体库）已在上方永久保护，删不掉。
+^com\.estrongs\.android\.pop$
+^com\.xiaobaifile\.tv$
+
+# === 7. 存储不足时的兜底 ===
+^com\.android\.providers\.media$
+^com\.android\.providers\.downloads
