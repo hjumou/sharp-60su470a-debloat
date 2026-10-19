@@ -1,0 +1,19 @@
+        c5736ef com.android.bcm.bluetooth/com.broadcom.bt.service.opp.BluetoothOppHandoverReceiver
+        f04b7ce com.android.bcm.bluetooth/.opp.BluetoothOppHandoverReceiver
+      com.letv.tvos.intermodal.vip.success:
+        93acff0 com.hpplay.happyplay.aw.new/com.letv.tvos.intermodal.vip.receiver.LeVipReceiver
+      androidx.profileinstaller.action.BENCHMARK_OPERATION:
+        b9de28e com.trim.tv/androidx.profileinstaller.ProfileInstallReceiver
+      android.intent.action.PRE_BOOT_COMPLETED:
+        d05d969 com.android.providers.media/.MediaUpgradeReceiver
+      android.intent.action.BOOT_COMPLETED:
+--
+      com.iflytek.xiri.contact.UPLOAD:
+        3dc6955 com.iflytek.xiri/tv.yuyin.upload.UploadService
+      com.sharp.fxc.ai.voice.service.VoiceDataService:
+        a417ae6 com.sharp.fxc.ai.voice/.service.VoiceDataService
+      com.sharp.adapter.service.SysAdapterService:
+        e31dad4 com.sharp.adapter/.service.SysAdapterService
+      com.sharp.fxc.upgrade.intent.action.SettingsAgentService:
+        fdef47d com.sharp.fxc.upgrade/.service.settings.SettingsAgentService
+      android.intent.action.BOOT_COMPLETED:

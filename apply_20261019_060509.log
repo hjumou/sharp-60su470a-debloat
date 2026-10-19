@@ -1,0 +1,27 @@
+== Target 192.168.1.194:5555 ==
+== Removing packages (pm uninstall -k --user 0) ==
+com.fxc.bootad.bootadplayer -> Success
+com.sharp.fxc.adservice -> Success
+com.sharp.fxc.app.advert -> Success
+com.sharp.fxc.recordcollect -> Success
+com.sharp.fxc.fxctopactivity -> Success
+com.sharp.fxc.classification -> Success
+com.sharp.fxc.lottery -> Success
+com.sharp.fxc.tlkgmic.service -> Success
+com.android.mcast -> Success
+com.sharp.fxc.mor.tv -> Success
+com.sharp.fxc.shortcut -> Success
+com.sharp.fxc.account -> Success
+com.sharp.fxc.fxcscreensaver -> Success
+com.sharp.app.userguide -> Success
+com.iflytek.xiri -> Success
+com.iflytek.xiri2.sharpvoice -> Success
+com.iflytek.xiri2.system -> Success
+com.sharp.fxc.ai.voice -> Success
+com.sharp.fxc.assistant -> Success
+com.sharp.fxc.voicecontrol.action.voiceaction -> Success
+com.sharp.fxc.upgrade -> Success
+com.example.upgrad -> Success
+com.kehiwn.wzy.foxconnautoota -> Success
+com.hpplay.happyplay.aw.new -> Success
+== Done. Log: /Users/johnnyhoo/WorkBuddy/2026-10-19-05-34-33/apply_20261019_060509.log ==

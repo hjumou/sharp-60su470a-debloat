@@ -1,0 +1,34 @@
+== Target 192.168.1.194:5555 ==
+== Disabling packages ==
+com.fxc.bootad.bootadplayer -> com.sharp.fxc.adservice              # 广告服务
+com.sharp.fxc.app.advert             # 广告应用
+com.sharp.fxc.recordcollect          # 使用记录/遥测采集
+com.sharp.fxc.fxctopactivity          # 顶部活动追踪
+com.sharp.fxc.classification         # 内容分类(广告定向)
+com.sharp.fxc.lottery                # 彩票推广
+com.sharp.fxc.tlkgmic.service        # 卡拉OK麦克风服务
+com.android.mcast                    # Miracast 演示
+com.sharp.fxc.mor.tv                 # Sharp 内容商店
+com.sharp.fxc.shortcut               # 快捷方式
+com.sharp.fxc.account                # Sharp 账号(遥测)
+com.sharp.fxc.fxcscreensaver         # 屏保
+com.sharp.app.userguide              # 用户向导
+
+# --- Voice stack (user: disable) ---
+com.iflytek.xiri                     # iFlytek 语音框架
+com.iflytek.xiri2.sharpvoice         # iFlytek 语音
+com.iflytek.xiri2.system             # iFlytek 系统语音
+com.sharp.fxc.ai.voice               # Sharp AI 语音
+com.sharp.fxc.assistant              # 语音助手
+com.sharp.fxc.voicecontrol.action.voiceaction  # 语音控制动作
+
+# --- OTA updates (user: disable) ---
+com.sharp.fxc.upgrade                # Sharp OTA 更新
+com.example.upgrad                   # 升级应用
+com.kehiwn.wzy.foxconnautoota        # Foxconn 自动 OTA
+
+# --- Casting (user: disable) ---
+com.hpplay.happyplay.aw.new          # 乐播/HPPlay AirPlay·DLNA
+Error: java.lang.SecurityException: Permission Denial: attempt to change component state from pid=8545, uid=2000, package uid=1000
+== Disabled packages now ==
+== Done. Log: /Users/johnnyhoo/WorkBuddy/2026-10-19-05-34-33/apply_20261019_055223.log ==

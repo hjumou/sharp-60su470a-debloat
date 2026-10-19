@@ -1,0 +1,10 @@
+# Third-party clone (someone else's repo) — not part of this project
+cleanyourtv/
+
+# WorkBuddy project memory (private, local-only)
+.workbuddy/
+
+# OS cruft
+.DS_Store
+__pycache__/
+*.pyc
