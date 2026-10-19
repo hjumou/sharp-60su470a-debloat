@@ -8,3 +8,6 @@ cleanyourtv/
 .DS_Store
 __pycache__/
 *.pyc
+
+# runtime logs (apply_v2 / verify / baseline)
+apply_v2_*.log
