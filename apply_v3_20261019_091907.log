@@ -1,0 +1,24 @@
+# apply_debloat_v3  2026-10-19 09:19:07  mode=APPLY
+# device=192.168.1.194:5555  list=debloat_batch3.txt
+# 当前可见包数: 62
+# 底线齐全（水滴桌面 + launcher3 兜底 + 工厂菜单）
+# ADB: device
+   [backup] 本地无备份，先拉取 com.android.musicfx ...
+OK      com.android.musicfx
+   [backup] 本地无备份，先拉取 com.svox.pico ...
+OK      com.svox.pico
+   [backup] 本地无备份，先拉取 com.foxconn.fxcsprcservice ...
+OK      com.foxconn.fxcsprcservice
+   [backup] 本地无备份，先拉取 com.trim.tv ...
+OK      com.trim.tv
+   [backup] 本地无备份，先拉取 com.estrongs.android.pop ...
+OK      com.estrongs.android.pop
+
+================ 汇总 ================
+清单条目     : 5
+已卸载成功   : 5
+跳过(已不存在): 0
+拒绝(白名单) : 0 
+失败         : 0
+包数 62 -> 57
+日志: /Users/johnnyhoo/WorkBuddy/2026-10-19-05-34-33/apply_v3_20261019_091907.log

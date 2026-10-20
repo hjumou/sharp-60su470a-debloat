@@ -22,3 +22,8 @@ com.sharp.fxc.upgrade|backup/apk/com.sharp.fxc.upgrade/base.apk
 com.example.upgrad|backup/apk/com.example.upgrad/Upgrad_sign.apk
 com.kehiwn.wzy.foxconnautoota|backup/apk/com.kehiwn.wzy.foxconnautoota/KehwinRcOta_sign.apk
 com.hpplay.happyplay.aw.new|backup/apk/com.hpplay.happyplay.aw.new/base.apk
+com.android.musicfx|backup/apk/com.android.musicfx/base.apk
+com.svox.pico|backup/apk/com.svox.pico/base.apk
+com.foxconn.fxcsprcservice|backup/apk/com.foxconn.fxcsprcservice/base.apk
+com.trim.tv|backup/apk/com.trim.tv/base.apk
+com.estrongs.android.pop|backup/apk/com.estrongs.android.pop/base.apk

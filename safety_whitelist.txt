@@ -12,6 +12,10 @@
 #   ③ 系统应用的 APK 可能是【无 dex】的（代码在 /system/app/X/oat/arm64/X.odex），
 #      这种包用 U 盘装到 /data 必然 classNotFound，装回去也打不开（本次踩过）。
 #      正确恢复法是 `pm uninstall <pkg>` 让它退回 /system 原厂版，不是 pm install。
+#   ④ 【2026-10-19】"从没启动过" ≠ "没用"。com.trim.tv 名字像腾讯系预装器，
+#      PSS=0 也从没跑过，打开却是【飞牛TV】，而且已经配好了 DellNAS 192.168.1.80:8005。
+#      差点把你正在用的 NAS 播放器当臃肿删了。
+#      → 判定任何包之前，必须 `am start` 打开看一眼，或查它有没有配置数据。
 # 本文件的全部意义：让机器来拦上面这些事，不靠人记。
 # ---------------------------------------------------------------------------
 
@@ -78,7 +82,14 @@
 # 理由：ADB 打不开时，这是唯一能装 APK 的通道（本次事故就是这么走出来的）。
 # 它们本身是臃肿的三方应用，你若确认不需要，把下面两行注释掉再删即可。
 # 注意：com.cultraview.newfilemanager（/system 媒体库）已在上方永久保护，删不掉。
-^com\.estrongs\.android\.pop$
+#
+# 【2026-10-19 已解除保护】用户明确同意删除 ES。
+#   解除依据：① 实测 87MB PSS + 6MB 子进程，是当前最大单体浪费；
+#             ② 兜底不止一条 —— /system 的 com.cultraview.newfilemanager（媒体库）
+#                永远在，且"应用管理"(com.yunpan.appmanage) 自带文件管理；
+#             ③ APK 已备份 backup/apk/com.estrongs.android.pop/base.apk（已入库）。
+#   还原：adb install -r backup/apk/com.estrongs.android.pop/base.apk
+# ^com\.estrongs\.android\.pop$
 ^com\.xiaobaifile\.tv$
 
 # === 7. 存储不足时的兜底 ===

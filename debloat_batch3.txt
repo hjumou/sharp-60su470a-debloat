@@ -1,0 +1,33 @@
+# debloat_batch3.txt
+# ---------------------------------------------------------------------------
+# 第三批精简清单（2026-10-19 二次体检产出，逐包已人工确认身份）
+# 用法：sh apply_debloat_v3.sh          # 干跑
+#       sh apply_debloat_v3.sh --apply  # 真删
+#
+# 入选标准（三条全满足）：
+#   1) 已确认身份 —— 不是"看名字像臃肿"就删（这次差点误删飞牛TV）；
+#   2) APK 已完整备份在本地，可 pm install -r --user 0 原样还原；
+#   3) 不承担系统职责：不是 HOME、不被系统 ContentProvider 依赖、
+#      不是 ADB/工厂/设置入口。
+#
+# 预期收益：约 58MB 存储 + 100MB 内存
+# ---------------------------------------------------------------------------
+
+# 音效均衡器，无进程、无 Provider
+com.android.musicfx
+
+# TTS 语音引擎，本机无 TTS 场景
+com.svox.pico
+
+# 富士康 SPRC 服务，开机拉起，非电视功能
+com.foxconn.fxcsprcservice
+
+# ★ 飞牛TV（实测确认：app 名为"飞牛TV"，已配置 DellNAS 192.168.1.80:8005）
+#   用户 2026-10-19 明确同意删除。APK 21.5MB 已备份，随时可装回。
+com.trim.tv
+
+# ★ ES 文件浏览器（87MB PSS + 6MB 子进程，含 DXCore 点心广告 SDK）
+#   用户 2026-10-19 明确同意删除。
+#   兜底通道：/system 内置的 com.cultraview.newfilemanager（媒体库）永远在，
+#   另装"应用管理"(com.yunpan.appmanage) 也带文件管理，U 盘装 APK 不受影响。
+com.estrongs.android.pop

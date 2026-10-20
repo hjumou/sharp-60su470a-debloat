@@ -2,6 +2,21 @@
 
 > 一站式复盘文档。目标读者：下一个接手的 agent（含 Antigravity）或你自己。
 > 本仓库完整记录了 **对一台 Sharp 60SU470A 智能电视做 ADB 精简、删除臃肿、加速开机** 的全过程、踩坑、最终可行方案、移除清单、安全边界与一键还原方法。
+>
+> **当前状态：两轮精简已完成，全程未恢复出厂。** 包数 `~85 → 57`，MemFree `~60 MB → 328 MB`。
+> 首页（水滴）、设置、工厂菜单、ADB 全部正常。
+
+## 文档导航（建议阅读顺序）
+
+| 文档 | 内容 | 何时读 |
+|---|---|---|
+| **[LESSONS.md](LESSONS.md)** | **22 条经验教训总汇**（含证据与推理链） | **想少走弯路，先读这个** |
+| `README.md`（本文） | 第一轮全记录：权限模型、卸载机制、移除清单、还原方法 | 想了解来龙去脉 |
+| [AUDIT-ROUND2.md](AUDIT-ROUND2.md) | 第二轮：再删 5 包、包身份误判复盘、剩余候选处置 | 想继续精简 |
+| [LAUNCHER-GUIDE.md](LAUNCHER-GUIDE.md) | 三方 TV 桌面真机横评（水滴 / FLauncher / Projectivy）+ 切换方法 | 想换桌面 |
+| [FACTORY-MENU-FIX.md](FACTORY-MENU-FIX.md) | 工厂菜单"装回去但点不开"的根因与正解 | 遇到系统应用装了打不开 |
+| [POST-RESET-PLAYBOOK.md](POST-RESET-PLAYBOOK.md) | 万一恢复出厂后的处理流程 | 灾后重建 |
+| [RECOVERY-NO-SETTINGS.md](RECOVERY-NO-SETTINGS.md) | 设置崩了、ADB 也没有时的硬件自救路径 | 极端情况 |
 
 ---
 
@@ -10,14 +25,18 @@
 - **设备**：Sharp 60SU470A（`ro.product.model = LCD_xxSUFOC470A`），Android **6.0（API 23，build `MRA58K` / 固件 `2.69.210109`）**，MStar `msd648` / 平台 `mooney`，Foxconn(FXC) 定制 ROM。
 - **目标**：基于 GitHub 仓库 `Gathin23/cleanyourtv`（原名 `tv-vibehack`，已更名）的思路，删臃肿、优化开机速度。
 - **最大坑**：此 ROM 的 **ADB shell（uid 2000）既无 `CHANGE_COMPONENT_ENABLED_STATE` 也无 `MANAGE_USERS` 权限** → 仓库默认的 `pm disable-user` 和退路 `pm hide` **全部被 `SecurityException` 拒绝**。最终唯一可行且可逆的方法是 **`pm uninstall -k --user 0`**。
-- **结果**：移除 **24 个包（83 → 59）**，重启验证通过（`BOOT_COMPLETED=1`，包数稳定 59，主桌面与核心服务完好）。
-- **可逆**：每个被移除包的 APK 已本地备份（`backup/apk/`，214 MB），还原脚本 `restore_debloat.sh` 用 `pm install -r --user 0` 装回。系统应用另有 `/system` 原厂 APK 兜底（恢复出厂即全量回来）。
+- **结果（第一轮）**：移除 **24 个包（83 → 59）**，重启验证通过（`BOOT_COMPLETED=1`，包数稳定 59，主桌面与核心服务完好）。
+- **结果（第二轮）**：再移除 **5 个包（62 → 57）**，重点是 `com.estrongs.android.pop`（ES，常驻 93.6 MB）。**MemFree 47~71 MB → 328 MB**。详见 [AUDIT-ROUND2.md](AUDIT-ROUND2.md)。
+- **可逆**：每个被移除包的 APK 已本地备份（`backup/apk/`，约 320 MB，29 个包），还原脚本 `restore_debloat.sh` 用 `pm install -r --user 0` 装回。系统应用另有 `/system` 原厂 APK 兜底（恢复出厂即全量回来）。
+- **最重要的一条反面教训**：`com.trim.tv` 名字像预装视频垃圾、PSS 长期为 0，实际是用户正在用的 **飞牛TV**（连着 DellNAS）。**包身份必须 `am start` 打开验证，不能靠名字和"从没跑过"推断。** 详见 [LESSONS.md L5/L6](LESSONS.md)。
 
 **速查命令**（在已 `adb connect 192.168.1.194:5555` 后）：
 ```sh
-sh apply_debloat.sh      # 再次执行移除（幂等，已移除的会跳过）
-sh restore_debloat.sh    # 一键还原全部 24 包
-sh rebackup_apks.sh      # 若本地 APK 备份丢失，从电视重新拉取
+sh apply_debloat_v3.sh            # 干跑：只打印计划，不动手（默认行为，安全）
+sh apply_debloat_v3.sh --apply    # 执行第三批移除（白名单守卫 + 逐包备份）
+sh restore_debloat.sh             # 一键还原（从 backup/apk/ 装回）
+sh rebackup_apks.sh               # 若本地 APK 备份丢失，从电视重新拉取
+sh verify_tv.sh                   # 4 项硬验收：Home / 工厂菜单 / ADB / 包数
 ```
 
 ---
@@ -223,28 +242,48 @@ sh restore_debloat.sh
 
 | 路径 | 说明 |
 |---|---|
-| `README.md` | 本文档（全记录） |
-| `debloat_sharp_su470a.txt` | 移除清单（含中文理由 + 安全边界注释），脚本的数据源 |
-| `apply_debloat.sh` | 一键执行移除（幂等） |
-| `restore_debloat.sh` | 一键还原（从 `backup/apk/` 装回） |
+| **[LESSONS.md](LESSONS.md)** | **22 条经验教训总汇（跨两轮）**，本仓库最有价值的部分 |
+| `README.md` | 本文档（第一轮全记录） |
+| `AUDIT-ROUND2.md` | 第二轮精简报告：再删 5 包、包身份误判复盘 |
+| `LAUNCHER-GUIDE.md` | 三方 TV 桌面真机横评 + 切换/回滚方法 |
+| `FACTORY-MENU-FIX.md` | 系统应用"装了打不开"（无 dex）的根因与正解 |
+| `debloat_sharp_su470a.txt` | 第一轮移除清单（24 包，含中文理由），脚本的数据源 |
+| `debloat_batch3.txt` | 第二轮移除清单（5 包） |
+| `apply_debloat.sh` | 第一轮执行脚本（幂等） |
+| `apply_debloat_v2.sh` | 第一轮加固版：默认干跑 + 白名单守卫 + 逐包备份校验 |
+| `apply_debloat_v3.sh` | **当前推荐**：v2 + 清单可传参（`sh apply_debloat_v3.sh [--apply] [清单]`） |
+| `restore_debloat.sh` | 一键还原（从 `backup/apk/` 装回，用 `pm install -r --user 0`） |
 | `rebackup_apks.sh` | 本地 APK 备份丢失时，从电视重新拉取 |
+| `verify_tv.sh` | 4 项硬验收：Home / 工厂菜单能否真开 / ADB / 包数 |
+| `watch_adb_and_grab.sh` | ADB 卡死时的哨兵：每 5 秒轮询，抓到窗口立刻抢救 APK |
+| `rescue_on_adb.sh` | 抢救脚本（`--all` / `--backup-only`） |
+| `safety_whitelist.txt` | 正则白名单（含 `mstar.factorymenu.ui`、三桌面、`com.sharp.fxc.shortcut`） |
 | `backup/apk_manifest.txt` | `pkg\|本地apk路径` 清单，还原脚本的输入 |
-| `backup/apk/` | 24 个已备份 APK（214 MB） |
-| `backup/20261019_054606/` | 完整快照：`packages_*`、`settings_*`、`props.txt`、`home.txt`、`boot_receivers.txt`、三张桌面截图 `*.png` |
+| `backup/apk/` | 29 个已备份 APK（约 320 MB，最大单个 53 MB，无超 100 MB 文件） |
+| `backup/20261019_054606/` | 完整快照：`packages_*`、`settings_*`、`props.txt`、`home.txt`、`boot_receivers.txt`、桌面截图 |
+| `backup/full_20261019_085111/` | 全量 `/data` APK 快照（30+ 包，398 MB，APK 本体不入库，仅清单） |
+| `launchers/shots/` | 证据截图（JPEG）：飞牛TV 身份铁证、应用管理、Projectivy/FLauncher 桌面、主屏选择器 |
 | `apply_20261019_055223.log` | ⚠️ 失败样例：`disable-user` 全 `SecurityException`（踩坑存证） |
 | `apply_20261019_060509.log` | ✅ 成功样例：`uninstall -k --user 0` 全 `Success` |
+| `apply_v3_20261019_091907.log` | ✅ 第二轮执行日志（5 包） |
 
 ---
 
 ## 14. 给 Antigravity / 下一个 agent 的续作建议
 
-以下是可以继续深挖的方向（均未在本次执行）：
+以下方向**已在本仓库第二轮中完成**，此处保留原计划并标注结果，便于对照：
 
-1. **量化开机时间对比**：本次未采集"精简前"开机耗时基线（电视已重启过，无法回测）。下次可在移除**前**用 `adb shell 'cat /proc/uptime'` 与 `getprop sys.boot_completed` 轮询记录首次到达时间，建立对照。
-2. **兼容 API 23 的第三方 TV launcher**：`cleanyourtv` 的 launcher 要 API 26+。可在 F-Droid 等找 `minSdk ≤ 23` 的轻量 TV launcher 替换臃肿首页（注意保留 `com.sharp.launcher3` 兜底，且本 ROM 的 HOME-role 机制在 Android 6 不支持 `cmd role`，需用默认应用/Intent 方式设主页）。
-3. **残留广告开关**：即便移除了播放器，仍有 persist 属性残留（`persist.service.bootad.activead=1`、`persist.sys.fxc.ad.*`、`persist.sys.adv.enable=1`）。可考虑 `setprop` 关闭这些 flag（需验证是否被移除的服务读取；部分 flag 对已卸载组件无影响）。
-4. **进一步评估保留的预装**：`com.estrongs.android.pop`(ES)、`com.olimsoft.android.oplayer.pro`(OPlayer)、`com.xiaobaifile.tv`(小白文件)、`com.trim.tv`、`com.tvshuaji.shuidiui`(水滴)、`com.sharp.fxc.newsetupwiz` 仍在。如需更极致精简，可补充评估（用户本次选择保留）。
-5. **安全收尾**：确认 ADB 调试是否可关；如长期暴露在网络，建议关闭 `persist.service.adb.enable`/`service.adb.tcp.port`。
+1. **量化开机时间对比**：本次未采集"精简前"开机耗时基线（电视已重启过，无法回测）。下次可在移除**前**用 `adb shell 'cat /proc/uptime'` 与 `getprop sys.boot_completed` 轮询记录首次到达时间，建立对照。**（仍未做，需要下次重装系统时才能补基线）**
+2. ~~兼容 API 23 的第三方 TV launcher~~ → **已完成**。Projectivy 4.72 与 FLauncher 2025.07 均已在真机跑通并量过内存，见 [LAUNCHER-GUIDE.md](LAUNCHER-GUIDE.md)。正版 Google TV 桌面因**本机无 GMS**（0 个 `com.google.*`）不可用。
+3. **残留广告开关**：即便移除了播放器，仍有 persist 属性残留（`persist.service.bootad.activead=1`、`persist.sys.fxc.ad.*`、`persist.sys.adv.enable=1`）。可考虑 `setprop` 关闭这些 flag（需验证是否被移除的服务读取；部分 flag 对已卸载组件无影响）。**（仍未做，低风险低收益）**
+4. ~~进一步评估保留的预装~~ → **已完成**。`com.estrongs.android.pop`(ES)、`com.trim.tv`(飞牛TV) 已经用户确认后移除；`com.yunpan.appmanage`（实为「应用管理」，有用）与三个桌面保留。剩余 57 包中已无可删项。
+5. **安全收尾**：确认 ADB 调试是否可关；如长期暴露在网络，建议关闭 `persist.service.adb.enable`/`service.adb.tcp.port`。**（注意：本机 ADB 是唯一远程维护通道，且工厂菜单是唯一开关入口，关闭前务必确认物理遥控器可达设置）**
+6. **剩余唯一低风险优化项**：动画时值。当前 `window_animation_scale` / `transition_animation_scale` / `animator_duration_scale` 均为 `0.5`，可改 `0` 让遥控器响应更跟手（不改变实际耗时）：
+   ```sh
+   adb shell settings put global window_animation_scale 0
+   adb shell settings put global transition_animation_scale 0
+   adb shell settings put global animator_duration_scale 0
+   ```
 
 ---
 

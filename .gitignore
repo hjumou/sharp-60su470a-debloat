@@ -9,9 +9,21 @@ cleanyourtv/
 __pycache__/
 *.pyc
 
-# runtime logs (apply_v2 / verify / baseline)
+# runtime logs (apply_v2 / apply_v3 dry-run / verify / baseline)
 apply_v2_*.log
+apply_v3_20261019_090942.log
+apply_v3_20261019_091833.log
+verify_*.log
+baseline_*.log
+
 # full/hotgrab backup payloads (keep manifests, skip APK blobs)
 backup/full_*/apk/
 backup/hotgrab_*/
 usb-tools/
+
+# Third-party launcher binaries — NOT redistributed (license + ~21 MB).
+# Download links are documented in LAUNCHER-GUIDE.md §5.
+launchers/*.apk
+
+# Raw 1080p screenshots — the compressed JPEGs in launchers/shots/ are kept instead
+launchers/*.png
