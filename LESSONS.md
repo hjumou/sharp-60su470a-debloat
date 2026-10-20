@@ -341,6 +341,45 @@ adb shell input tap <cx> <cy>
 不能拿当前实况代替推演。例如"蓝牙没配对设备所以能删" —— 错，
 遥控器如果是蓝牙的，删了直接废掉输入设备，而当前"没配对"只说明你没配过。
 
+### L23. `git push` 不通时，Git Data API 可以绕过去
+
+**现象**：`git push` 报 `CONNECT tunnel failed, response 502`（经代理）或
+`curl 56 Send failure: Broken pipe`（大包），直连 443 全部超时。
+
+**诊断的关键**：不要笼统说"GitHub 连不上"，要**分别测两个域名**：
+
+```sh
+curl -s -o /dev/null -w "%{http_code}\n" -m 20 https://github.com        # 000 超时
+curl -s -o /dev/null -w "%{http_code}\n" -m 20 https://api.github.com    # 200 OK
+```
+
+一个通、一个不通 = **git 传输层被阻断，但 API 通道完好**。
+（另测 `nc -z github.com 22` 与 `ssh.github.com 443`，本例两者都通，
+但账户上没有注册 SSH 公钥，`gh` token 也缺 `admin:public_key` 权限，
+所以 SSH 方案走不通。）
+
+**解法**：用 Git Data API 手工造一个 commit：
+
+```
+POST /git/blobs   (base64 内容)      → blob sha
+POST /git/trees   (base_tree + 条目) → tree sha
+POST /git/commits (message/tree/父)  → commit sha
+PATCH /git/refs/heads/main           → 移动分支
+```
+
+本仓库的 `tools/push_via_api.py` 就是这个流程的可复用实现：
+
+```sh
+python3 tools/push_via_api.py --message-file /tmp/msg.txt LESSONS.md README.md
+```
+
+**代价与注意**：
+- commit sha 与本地 `git commit` 产生的不同（committer 身份/时间不同），**内容一致**。
+  网络恢复后 `git fetch origin && git reset --hard origin/main` 即可对齐，不会丢内容。
+- base64 让体积膨胀约 33%：35 MB 的 APK 传成 46 MB 请求，本网络约需 30 秒。
+- 单文件上限 100 MB（GitHub blob 限制），请求超时要留足（本工具默认 600 秒）。
+- 只支持新增/更新，不支持删除文件（删除要走 `DELETE /contents` 或 tree 里给 `sha: null`）。
+
 ---
 
 ## 七、这把能到哪（能力边界）

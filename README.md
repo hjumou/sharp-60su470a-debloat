@@ -10,7 +10,7 @@
 
 | 文档 | 内容 | 何时读 |
 |---|---|---|
-| **[LESSONS.md](LESSONS.md)** | **22 条经验教训总汇**（含证据与推理链） | **想少走弯路，先读这个** |
+| **[LESSONS.md](LESSONS.md)** | **23 条经验教训总汇**（含证据与推理链） | **想少走弯路，先读这个** |
 | `README.md`（本文） | 第一轮全记录：权限模型、卸载机制、移除清单、还原方法 | 想了解来龙去脉 |
 | [AUDIT-ROUND2.md](AUDIT-ROUND2.md) | 第二轮：再删 5 包、包身份误判复盘、剩余候选处置 | 想继续精简 |
 | [LAUNCHER-GUIDE.md](LAUNCHER-GUIDE.md) | 三方 TV 桌面真机横评（水滴 / FLauncher / Projectivy）+ 切换方法 | 想换桌面 |
@@ -242,7 +242,7 @@ sh restore_debloat.sh
 
 | 路径 | 说明 |
 |---|---|
-| **[LESSONS.md](LESSONS.md)** | **22 条经验教训总汇（跨两轮）**，本仓库最有价值的部分 |
+| **[LESSONS.md](LESSONS.md)** | **23 条经验教训总汇（跨两轮）**，本仓库最有价值的部分 |
 | `README.md` | 本文档（第一轮全记录） |
 | `AUDIT-ROUND2.md` | 第二轮精简报告：再删 5 包、包身份误判复盘 |
 | `LAUNCHER-GUIDE.md` | 三方 TV 桌面真机横评 + 切换/回滚方法 |
@@ -257,6 +257,7 @@ sh restore_debloat.sh
 | `verify_tv.sh` | 4 项硬验收：Home / 工厂菜单能否真开 / ADB / 包数 |
 | `watch_adb_and_grab.sh` | ADB 卡死时的哨兵：每 5 秒轮询，抓到窗口立刻抢救 APK |
 | `rescue_on_adb.sh` | 抢救脚本（`--all` / `--backup-only`） |
+| `tools/push_via_api.py` | **`git push` 被阻断时的推送工具**：走 GitHub Git Data API 造 commit（见 [LESSONS.md L23](LESSONS.md)） |
 | `safety_whitelist.txt` | 正则白名单（含 `mstar.factorymenu.ui`、三桌面、`com.sharp.fxc.shortcut`） |
 | `backup/apk_manifest.txt` | `pkg\|本地apk路径` 清单，还原脚本的输入 |
 | `backup/apk/` | 29 个已备份 APK（约 320 MB，最大单个 53 MB，无超 100 MB 文件） |
